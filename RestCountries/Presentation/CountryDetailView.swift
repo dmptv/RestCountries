@@ -11,28 +11,36 @@ struct CountryDetailView: View {
     let country: Country
 
     var body: some View {
-        VStack {
-            AsyncImage(url: URL(string: country.flags.png)) { image in
-                image
-                    .resizable()
-                    .scaledToFit()
-            } placeholder: {
-                ProgressView()
+        HStack(alignment: .top, spacing: 16) {
+            VStack(alignment: .center, spacing: 0) {
+                AsyncImage(url: URL(string: country.flags.png)) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
+                } placeholder: {
+                    ProgressView()
+                }
             }
+            .frame(width: 50)
 
-            Text(country.name.common)
-                .font(.largeTitle)
-                .bold()
+            VStack(alignment: .leading, spacing: 4) {
+                Text(country.name.common)
+                    .font(.largeTitle)
+                    .bold()
 
-            Group {
-                Text("Capital: \(country.capital.first ?? "N/A")")
-                Text("Region: \(country.region)")
+                Group {
+                    Text("Capital: \(country.capital.first ?? "N/A")")
+                    Text("Region: \(country.region)")
+                }
+                .font(.title3)
             }
-            .font(.title3)
         }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
-    CountryDetailView(country: .init(name: .init(common: "Thailand"), capital: ["Bangkok"], region: "South Asia", flags: .init(png: "https://flagcdn.com/w320/gs.png")))
+    CountryDetailView(country: .init(name: .init(common: "Thailand"), capital: ["Bangkok"], region: "South Asia", flags: .init(png: "https://mainfacts.com/media/images/coats_of_arms/th.png")))
 }
