@@ -14,18 +14,23 @@ class APIService {
 
     func fetchCountries(completion: @escaping (Result<[Country], Error>) -> Void) {
         guard let url = URL(string: "https://restcountries.com/v3.1/all") else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
+            completion(.failure(APIError.invalidURL))
             return
         }
 
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error {
-                completion(.failure(error))
+                completion(.failure(APIError.networkError(error)))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(APIError.networkError(NSError(domain: "HTTP Error", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: nil))))
                 return
             }
 
             guard let data else {
-                completion(.failure(NSError(domain: "No Data", code: 404)))
+                completion(.failure(APIError.noData))
                 return
             }
 
@@ -35,10 +40,30 @@ class APIService {
                     completion(.success(countries))
                 }
             } catch {
-                completion(.failure(error))
+                completion(.failure(APIError.decodingError))
             }
         }
         .resume()
 
+    }
+}
+
+enum APIError: Error, LocalizedError {
+    case invalidURL
+    case noData
+    case decodingError
+    case networkError(Error)
+
+    var localizedDescription: String {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .noData:
+            return "No data received"
+        case .decodingError:
+            return "Failed to decode data"
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
+        }
     }
 }

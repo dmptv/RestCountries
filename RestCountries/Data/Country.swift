@@ -7,21 +7,18 @@
 
 import Foundation
 
-struct Country: Identifiable, Decodable {
+struct Country: Codable, Identifiable {
     var id = UUID()
     let name: Name
     let capital: [String]
-    let flags: Flags
     let region: String
-    let population: Int
-    let area: Double?
+    let flags: Flags
 
-    struct Name: Decodable {
+    struct Name: Codable {
         let common: String
     }
 
-    struct Flags: Decodable {
+    struct Flags: Codable {
         let png: String
     }
-
 }

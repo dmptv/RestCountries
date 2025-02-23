@@ -23,11 +23,10 @@ struct CountryDetailView: View {
             Text(country.name.common)
                 .font(.largeTitle)
                 .bold()
+
             Group {
                 Text("Capital: \(country.capital.first ?? "N/A")")
                 Text("Region: \(country.region)")
-                Text("Population: \(country.population)")
-                Text("Area: \(country.area ?? 0) km²")
             }
             .font(.title3)
         }
@@ -35,11 +34,5 @@ struct CountryDetailView: View {
 }
 
 #Preview {
-    CountryDetailView(country:
-            .init(name: .init(common: "Thailand"),
-                  capital: ["Bangkok"],
-                  flags: .init(png: "https://flagcdn.com/w320/cy.png"),
-                  region: "South Asia",
-                  population: 100000,
-                  area: 40000.00))
+    CountryDetailView(country: .init(name: .init(common: "Thailand"), capital: ["Bangkok"], region: "South Asia", flags: .init(png: "https://flagcdn.com/w320/gs.png")))
 }
