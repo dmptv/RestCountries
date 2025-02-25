@@ -23,8 +23,8 @@ struct CountryListView: View {
                         Text(region).tag(region)
                     }
                 }
-                .pickerStyle(.segmented) // or use .menu for dropdown style
-                .padding()
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
 
                 if viewModel.isLoading {
                     ProgressView() 
