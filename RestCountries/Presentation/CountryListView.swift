@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct CountryListView: View {
-    @State var viewModel = CountryViewModel()
+    @Environment(CountryViewModel.self) var viewModel: CountryViewModel
     @State private var dataLoaded = false
 
     var body: some View {
@@ -65,4 +65,5 @@ struct CountryListView: View {
 
 #Preview {
     CountryListView()
+        .environment(CountryViewModel(countryService: APIService.shared))
 }

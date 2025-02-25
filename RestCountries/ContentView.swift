@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var viewModel: CountryViewModel = CountryViewModel(countryService: APIService.shared)
+
     var body: some View {
         CountryListView()
+            .environment(viewModel)
     }
 }
 

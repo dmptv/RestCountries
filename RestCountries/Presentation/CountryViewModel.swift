@@ -13,7 +13,12 @@ final class CountryViewModel {
     var countries: [Country] = []
     var errorMessage: String?
     var isLoading = false
-    private var cachedCountries: [Country]?
+    private var cachedCountries: [Country]? = nil
+    private let countryService: CountryServiceProtocol
+
+    init(countryService: CountryServiceProtocol) { 
+        self.countryService = countryService
+    }
 
     func loadCountries() {
         if let cachedCountries = cachedCountries {

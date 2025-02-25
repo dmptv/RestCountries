@@ -7,7 +7,11 @@
 
 import Foundation
 
-class APIService {
+protocol CountryServiceProtocol {
+    func fetchCountries() async throws -> [Country]
+}
+
+class APIService: CountryServiceProtocol {
     static let shared = APIService()
 
     private init() {}
