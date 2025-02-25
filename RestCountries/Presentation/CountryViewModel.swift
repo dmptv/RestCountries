@@ -13,17 +13,48 @@ final class CountryViewModel {
     var countries: [Country] = []
     var errorMessage: String?
     var isLoading = false
-    private var cachedCountries: [Country]? = nil
     private let countryService: CountryServiceProtocol
+    private let fileName = "cached_countries.json"
 
     init(countryService: CountryServiceProtocol) { 
         self.countryService = countryService
+        loadFromStorage()
     }
 
-    func loadCountries() {
-        if let cachedCountries = cachedCountries {
-            self.countries = cachedCountries
+    // MARK: - File Storage Methods
+    private func loadFromStorage() {
+        guard let filePath = getFilePath(), FileManager.default.fileExists(atPath: filePath.path) else { return }
+        let decoder = JSONDecoder()
+
+        do {
+            let data = try Data(contentsOf: filePath)
+            let decodedCountries = try decoder.decode([Country].self, from: data)
+            self.countries = decodedCountries
+        } catch {
+            print("Failed to load countries: \(error.localizedDescription)")
         }
+    }
+
+    private func getFilePath() -> URL? {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths.first?.appendingPathComponent(fileName)
+    }
+
+    private func saveToStorage(countries: [Country]) {
+        guard let filePath = getFilePath() else { return }
+        let encoder = JSONEncoder()
+
+        do {
+            let data = try encoder.encode(countries)
+            try data.write(to: filePath)
+        } catch {
+            print("Failed to save countries: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - Data Fetched Remotely
+    func loadCountries() {
+        if !countries.isEmpty { return }
 
         isLoading = true
 
@@ -31,14 +62,14 @@ final class CountryViewModel {
             do {
                 let fetchedCountries = try await APIService.shared.fetchCountries()
                 await MainActor.run {
-                    self.cachedCountries = fetchedCountries
-                    self.countries = fetchedCountries
-                    self.isLoading = false
+                    countries = fetchedCountries
+                    isLoading = false
+                    saveToStorage(countries: fetchedCountries)
                 }
             } catch {
                 await MainActor.run {
-                    self.errorMessage = error.localizedDescription
-                    self.isLoading = false
+                    errorMessage = error.localizedDescription
+                    isLoading = false
                 }
             }
         }
