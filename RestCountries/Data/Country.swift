@@ -10,8 +10,8 @@ import Foundation
 struct Country: Codable, Identifiable {
     var id = UUID()
     let name: Name
-    let capital: [String]
-    let region: String
+    let capital: [String]?
+    let region: String?
     let flags: Flags
 
     struct Name: Codable {
@@ -21,4 +21,10 @@ struct Country: Codable, Identifiable {
     struct Flags: Codable {
         let png: String
     }
+
+    enum CodingKeys: String, CodingKey {
+        case name, flags, capital, region
+    }
 }
+
+

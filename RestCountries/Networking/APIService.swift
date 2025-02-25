@@ -34,17 +34,27 @@ class APIService {
                 return
             }
 
+            if let str = String(data: data, encoding: .utf8) {
+//                print("------------Successfully decoded: \(str)")
+            }
+
+            let jsonData = Data("""
+                [{
+            "name":{"common":"South Georgia","official":"South Georgia and the South Sandwich Islands"},
+            "flags": {"png": "https://flagcdn.com/w320/gs.png"},
+            "region": "Antarctic",
+            "capital": ["King Edward Point"]
+            }]
+            """.utf8)
+
             do {
-                let countries = try JSONDecoder().decode([Country].self, from: data)
-                DispatchQueue.main.async {
-                    completion(.success(countries))
-                }
+                let countries = try JSONDecoder().decode([Country].self, from: jsonData)
+                completion(.success(countries))
             } catch {
-                completion(.failure(APIError.decodingError))
+                completion(.failure(error))
             }
         }
         .resume()
-
     }
 }
 

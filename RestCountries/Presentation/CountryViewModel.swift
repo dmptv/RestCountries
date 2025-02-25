@@ -5,6 +5,7 @@
 //  Created by Kanat on 23.02.2025.
 //
 
+import Foundation
 import Combine
 
 class CountryViewModel: ObservableObject {
@@ -15,9 +16,14 @@ class CountryViewModel: ObservableObject {
         APIService.shared.fetchCountries { [weak self] result in
             switch result {
             case .success(let countries):
-                self?.countries = countries
+                DispatchQueue.main.async {
+                    print(countries.first)
+                    self?.countries = countries
+                }
             case .failure(let error ):
-                self?.errorMessage = error.localizedDescription
+                DispatchQueue.main.async {
+                    self?.errorMessage = error.localizedDescription
+                }
             }
         }
     }
