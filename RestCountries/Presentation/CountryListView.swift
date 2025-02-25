@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CountryListView: View {
     @State var viewModel = CountryViewModel()
-    @State var isError = false
+    @State private var dataLoaded = false
 
     var body: some View {
         NavigationStack() {
             VStack {
+                if viewModel.isLoading {
+                    ProgressView() 
+                }
+
                 if let error = viewModel.errorMessage {
                     Text("Error: \(error)")
                 }
@@ -21,14 +26,14 @@ struct CountryListView: View {
                 List(viewModel.countries) { country in
                     NavigationLink(value: country) {
                         HStack {
-                            AsyncImage(url: URL(string: country.flags.png)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 50, height: 30)
+                            KFImage(URL(string: country.flags.png))
+                                .loadDiskFileSynchronously()
+                                .cacheMemoryOnly()
+                                .renderingMode(.original)
+                                .placeholder { ProgressView() }
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 30)
 
                             VStack(alignment: .leading) {
                                 Text(country.name.common)
@@ -48,7 +53,10 @@ struct CountryListView: View {
             }
             .navigationTitle("Countries")
             .task {
-                viewModel.loadCountries()
+                if !dataLoaded {
+                    viewModel.loadCountries()
+                    dataLoaded = true
+                }
             }
 
         }

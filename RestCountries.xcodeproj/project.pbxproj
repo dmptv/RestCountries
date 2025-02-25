@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CE725C342D6DDC06001DCB35 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CE725C332D6DDC06001DCB35 /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CE725C072D6B3A64001DCB35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE725C342D6DDC06001DCB35 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = RestCountries;
 			packageProductDependencies = (
+				CE725C332D6DDC06001DCB35 /* Kingfisher */,
 			);
 			productName = RestCountries;
 			productReference = CE725BF62D6B3A62001DCB35 /* RestCountries.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = CE725BED2D6B3A62001DCB35;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CE725C322D6DD978001DCB35 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE725BF72D6B3A62001DCB35 /* Products */;
 			projectDirPath = "";
@@ -552,6 +561,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE725C322D6DD978001DCB35 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE725C332D6DDC06001DCB35 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE725C322D6DD978001DCB35 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE725BEE2D6B3A62001DCB35 /* Project object */;
 }
