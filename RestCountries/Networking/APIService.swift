@@ -35,20 +35,11 @@ class APIService {
             }
 
             if let str = String(data: data, encoding: .utf8) {
-//                print("------------Successfully decoded: \(str)")
+                print("Successfully decoded")
             }
 
-            let jsonData = Data("""
-                [{
-            "name":{"common":"South Georgia","official":"South Georgia and the South Sandwich Islands"},
-            "flags": {"png": "https://flagcdn.com/w320/gs.png"},
-            "region": "Antarctic",
-            "capital": ["King Edward Point"]
-            }]
-            """.utf8)
-
             do {
-                let countries = try JSONDecoder().decode([Country].self, from: jsonData)
+                let countries = try JSONDecoder().decode([Country].self, from: data)
                 completion(.success(countries))
             } catch {
                 completion(.failure(error))
