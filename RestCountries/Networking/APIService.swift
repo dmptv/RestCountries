@@ -34,7 +34,7 @@ class APIService {
                 return
             }
 
-            if let str = String(data: data, encoding: .utf8) {
+            if let _ = String(data: data, encoding: .utf8) {
                 print("Successfully decoded")
             }
 

@@ -17,7 +17,6 @@ class CountryViewModel: ObservableObject {
             switch result {
             case .success(let countries):
                 DispatchQueue.main.async {
-                    print(countries.first)
                     self?.countries = countries
                 }
             case .failure(let error ):

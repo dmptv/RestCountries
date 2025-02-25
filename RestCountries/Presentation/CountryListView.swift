@@ -12,14 +12,14 @@ struct CountryListView: View {
     @State var isError = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack() {
             VStack {
                 if let error = viewModel.errorMessage {
                     Text("Error: \(error)")
                 }
 
                 List(viewModel.countries) { country in
-                    NavigationLink(destination: CountryDetailView(country: country)) {
+                    NavigationLink(value: country) {
                         HStack {
                             AsyncImage(url: URL(string: country.flags.png)) { image in
                                 image
@@ -39,13 +39,19 @@ struct CountryListView: View {
                         }
                     }
                 }
+                .navigationDestination(for: Country.self) { country in
+                    CountryDetailView(country: country)
+                }
+                .navigationDestination(for: String.self) { _ in
+                    Text("Ana")
+                }
             }
+            .navigationTitle("Countries")
             .onAppear {
                 viewModel.loadCountries()
             }
 
         }
-        .navigationTitle("Countries")
     }
 }
 

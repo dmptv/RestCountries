@@ -7,18 +7,22 @@
 
 import Foundation
 
-struct Country: Codable, Identifiable {
+struct Country: Codable, Identifiable, Hashable {
+    static func == (lhs: Country, rhs: Country) -> Bool {
+        lhs.id == rhs.id
+    }
+    
     var id = UUID()
     let name: Name
     let capital: [String]?
     let region: String?
     let flags: Flags
 
-    struct Name: Codable {
+    struct Name: Codable, Hashable {
         let common: String
     }
 
-    struct Flags: Codable {
+    struct Flags: Codable, Hashable {
         let png: String
     }
 
