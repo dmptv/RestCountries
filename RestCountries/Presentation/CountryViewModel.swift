@@ -14,7 +14,7 @@ final class CountryViewModel {
     var errorMessage: String?
     var isLoading = false
     private let countryService: CountryServiceProtocol
-    private let fileName = "cached_countries.json"
+    private let countryRepository: CountryRepositoryProtocol
 
     var regions: [String] {
             let uniqueRegions = Set(countries.compactMap { $0.region })
@@ -35,9 +35,20 @@ final class CountryViewModel {
 
     var filteredCountries: [Country] = []
 
-    init(countryService: CountryServiceProtocol) {
+    private func applyFilters() {
+        filteredCountries = countries.filter { country in
+            let matchesSearch = searchQuery.isEmpty || country.name.common.lowercased().contains(searchQuery.lowercased())
+            let matchesRegion = selectedRegion == nil || country.region == selectedRegion
+            return matchesSearch && matchesRegion
+        }
+    }
+
+    init(countryService: CountryServiceProtocol, countryRepository: CountryRepositoryProtocol = CountryRepository()) {
         self.countryService = countryService
-        loadFromStorage()
+        self.countryRepository = countryRepository
+        let decodedCountries = self.countryRepository.loadCountries()
+        countries = decodedCountries ?? []
+        filteredCountries = decodedCountries ?? []
     }
 
     func loadCountries() {
@@ -52,7 +63,7 @@ final class CountryViewModel {
                     countries = fetchedCountries
                     filteredCountries = fetchedCountries
                     isLoading = false
-                    saveToStorage(countries: fetchedCountries)
+                    countryRepository.saveCountries(fetchedCountries)
                 }
             } catch {
                 await MainActor.run {
@@ -60,48 +71,6 @@ final class CountryViewModel {
                     isLoading = false
                 }
             }
-        }
-    }
-}
-
-extension CountryViewModel {
-    // MARK: - File Storage Methods
-    private func loadFromStorage() {
-        guard let filePath = getFilePath(), FileManager.default.fileExists(atPath: filePath.path) else { return }
-        let decoder = JSONDecoder()
-
-        do {
-            let data = try Data(contentsOf: filePath)
-            let decodedCountries = try decoder.decode([Country].self, from: data)
-            countries = decodedCountries
-            filteredCountries = decodedCountries
-        } catch {
-            print("Failed to load countries: \(error.localizedDescription)")
-        }
-    }
-
-    private func getFilePath() -> URL? {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths.first?.appendingPathComponent(fileName)
-    }
-
-    private func saveToStorage(countries: [Country]) {
-        guard let filePath = getFilePath() else { return }
-        let encoder = JSONEncoder()
-
-        do {
-            let data = try encoder.encode(countries)
-            try data.write(to: filePath)
-        } catch {
-            print("Failed to save countries: \(error.localizedDescription)")
-        }
-    }
-
-    private func applyFilters() {
-        filteredCountries = countries.filter { country in
-            let matchesSearch = searchQuery.isEmpty || country.name.common.lowercased().contains(searchQuery.lowercased())
-            let matchesRegion = selectedRegion == nil || country.region == selectedRegion
-            return matchesSearch && matchesRegion
         }
     }
 }
