@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CountryListView: View {
-    @StateObject var viewModel = CountryViewModel()
+    @State var viewModel = CountryViewModel()
     @State var isError = false
 
     var body: some View {
@@ -47,7 +47,7 @@ struct CountryListView: View {
                 }
             }
             .navigationTitle("Countries")
-            .onAppear {
+            .task {
                 viewModel.loadCountries()
             }
 
