@@ -15,6 +15,17 @@ struct CountryListView: View {
     var body: some View {
         NavigationStack() {
             VStack {
+                Picker("Select Region", selection: Binding(
+                    get: { viewModel.selectedRegion ?? "All" },
+                    set: { newValue in viewModel.selectedRegion = newValue == "All" ? nil : newValue }
+                )) {
+                    ForEach(viewModel.regions, id: \.self) { region in
+                        Text(region).tag(region)
+                    }
+                }
+                .pickerStyle(.segmented) // or use .menu for dropdown style
+                .padding()
+
                 if viewModel.isLoading {
                     ProgressView() 
                 }
@@ -23,7 +34,7 @@ struct CountryListView: View {
                     Text("Error: \(error)")
                 }
 
-                List(viewModel.countries) { country in
+                List(viewModel.filteredCountries) { country in
                     NavigationLink(value: country) {
                         HStack {
                             KFImage(URL(string: country.flags.png))
@@ -50,6 +61,10 @@ struct CountryListView: View {
                 .navigationDestination(for: String.self) { _ in
                     Text("Ana")
                 }
+                .searchable(text: Binding(
+                    get: { viewModel.searchQuery },
+                    set: { newValue in viewModel.searchQuery = newValue }
+                ), prompt: Text("Search for a country"))
             }
             .navigationTitle("Countries")
             .task {
