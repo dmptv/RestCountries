@@ -14,10 +14,14 @@ protocol CountryRepositoryProtocol {
 
 class CountryRepository: CountryRepositoryProtocol {
     private let fileName = "countries.json"
+    let decoder: JSONDecoding
+
+    init(decoder: JSONDecoding = JSONDecoder()) {
+        self.decoder = decoder
+    }
 
     func loadCountries() -> [Country]? {
         guard let filePath = getFilePath(), FileManager.default.fileExists(atPath: filePath.path) else { return nil }
-        let decoder = JSONDecoder()
 
         do {
             let data = try Data(contentsOf: filePath)

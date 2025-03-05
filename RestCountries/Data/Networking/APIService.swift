@@ -12,9 +12,17 @@ protocol CountryServiceProtocol {
 }
 
 class APIService: CountryServiceProtocol {
-    static let shared = APIService()
+    static var shared = APIService()
+    var decoder: JSONDecoding = JSONDecoder()
 
-    private init() {}
+    private init(decoder: JSONDecoding = JSONDecoder()) {
+        self.decoder = decoder
+    }
+
+    // Static function to create a shared instance with a custom decoder
+    static func configure(with decoder: JSONDecoding) {
+        shared = APIService(decoder: decoder)
+    }
 
     func fetchCountries() async throws -> [Country] {
         guard let url = URL(string: "https://restcountries.com/v3.1/all") else {
@@ -31,26 +39,8 @@ class APIService: CountryServiceProtocol {
             )
         }
 
-        return try JSONDecoder().decode([Country].self, from: data)
+        return try decoder.decode([Country].self, from: data)
     }
 }
 
-enum APIError: Error, LocalizedError {
-    case invalidURL
-    case noData
-    case decodingError
-    case networkError(Error)
 
-    var localizedDescription: String {
-        switch self {
-        case .invalidURL:
-            return "Invalid URL"
-        case .noData:
-            return "No data received"
-        case .decodingError:
-            return "Failed to decode data"
-        case .networkError(let error):
-            return "Network error: \(error.localizedDescription)"
-        }
-    }
-}

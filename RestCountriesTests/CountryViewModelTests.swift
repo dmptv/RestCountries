@@ -53,3 +53,18 @@ final class CountryViewModelTests: XCTestCase {
     }
 
 }
+
+class MockJSONDecoder: JSONDecoding {
+    var result: Decodable?
+    var error: Error?
+
+    func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        if let error = error {
+            throw error
+        }
+        if let result = result as? T {
+            return result
+        }
+        fatalError("Mock decoder failed")
+    }
+}
