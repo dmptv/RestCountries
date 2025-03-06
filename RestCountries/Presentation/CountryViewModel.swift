@@ -74,3 +74,56 @@ final class CountryViewModel {
         }
     }
 }
+
+/*
+ class CountriesViewModel: ObservableObject {
+     @Published var countries: [Country] = []
+     @Published var filteredCountries: [Country] = []
+     @Published var isLoading = false
+     @Published var errorMessage: String?
+
+     private let loadingUseCase: CountryLoadingUseCase
+     private let savingUseCase: CountrySavingUseCase
+     private let filteringUseCase: CountryFilteringUseCase
+
+     init(
+         loadingUseCase: CountryLoadingUseCase,
+         savingUseCase: CountrySavingUseCase,
+         filteringUseCase: CountryFilteringUseCase
+     ) {
+         self.loadingUseCase = loadingUseCase
+         self.savingUseCase = savingUseCase
+         self.filteringUseCase = filteringUseCase
+     }
+
+     func loadCountries() {
+         if !countries.isEmpty { return }
+
+         isLoading = true
+
+         Task {
+             do {
+                 let fetchedCountries = try await loadingUseCase.loadCountries()
+                 await MainActor.run {
+                     countries = fetchedCountries
+                     filteredCountries = fetchedCountries
+                     isLoading = false
+                 }
+             } catch {
+                 await MainActor.run {
+                     errorMessage = error.localizedDescription
+                     isLoading = false
+                 }
+             }
+         }
+     }
+
+     func filterCountries(by searchText: String) {
+         filteredCountries = filterCountries(
+         by: searchQuery,
+         selectedRegion: selectedRegion,
+         from: countries
+         )
+     }
+ }
+ */
