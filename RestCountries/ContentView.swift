@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var viewModel: CountryViewModel = CountryViewModel(countryUseCase: CountryUseCase())
+    @Environment(DependencyContainer.self) var container: DependencyContainer
 
     var body: some View {
         TabView {
             CountryListView()
-                .environment(viewModel)
+                .environment(CountryViewModel(
+                        countryUseCase: container.resolve(CountryUseCasesProtocol.self)!
+                    ))
                 .tabItem {
                     Label("Countries", systemImage: "globe")
                 }
