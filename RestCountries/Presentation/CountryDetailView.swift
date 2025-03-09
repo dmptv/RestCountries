@@ -50,10 +50,10 @@ struct CountryDetailView: View {
 }
 
 #Preview {
-    CountryDetailView_Previews()
+    CountryDetailView_Preview()
 }
 
-struct CountryDetailView_Previews: View {
+struct CountryDetailView_Preview: View {
     @State var country: Country? = nil
 
     var body: some View {
