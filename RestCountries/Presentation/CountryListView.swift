@@ -80,5 +80,5 @@ struct CountryListView: View {
 
 #Preview {
     CountryListView()
-        .environment(CountryViewModel(countryService: APIService.shared))
+        .environment(CountryViewModel(countryUseCase: CountryUseCase()))
 }

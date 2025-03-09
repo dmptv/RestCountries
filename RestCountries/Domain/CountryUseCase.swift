@@ -7,17 +7,17 @@
 
 import Foundation
 
-protocol CountryUseCases {
+protocol CountryUseCasesProtocol {
     func loadCountries() async throws -> [Country]
-    func saveCountries(_ countries: [Country])
-    func filterCountries(by searchText: String, selectedRegion: String?, from countries: [Country]) -> [Country]
+    func saveCountries(_ countries: [Country]) async throws
+    func filterCountries(by searchText: String, selectedRegion: String?, from countries: [Country]) async -> [Country]
 }
 
-class CountryUseCase: CountryUseCases {
+class CountryUseCase: CountryUseCasesProtocol {
     private let countryRepository: CountryRepositoryProtocol
     private let countryService: CountryServiceProtocol
 
-    init(countryRepository: CountryRepositoryProtocol, countryService: CountryServiceProtocol) {
+    init(countryRepository: CountryRepositoryProtocol = CountryRepository(), countryService: CountryServiceProtocol = APIService.shared) {
         self.countryRepository = countryRepository
         self.countryService = countryService
     }
@@ -27,15 +27,14 @@ class CountryUseCase: CountryUseCases {
             return savedCountries
         }
         let fetchedCountries = try await countryService.fetchCountries()
-        countryRepository.saveCountries(fetchedCountries)
         return fetchedCountries
     }
 
-    func saveCountries(_ countries: [Country]) {
+    func saveCountries(_ countries: [Country]) async throws  {
         countryRepository.saveCountries(countries)
     }
 
-    func filterCountries(by searchText: String, selectedRegion: String?, from countries: [Country]) -> [Country] {
+    func filterCountries(by searchText: String, selectedRegion: String?, from countries: [Country]) async -> [Country] {
         if searchText.isEmpty && selectedRegion == nil {
             return countries
         }

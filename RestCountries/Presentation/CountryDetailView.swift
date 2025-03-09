@@ -50,5 +50,5 @@ struct CountryDetailView: View {
 }
 
 #Preview {
-    CountryDetailView(country: .init(name: .init(common: "Thailand"), capital: ["Bangkok"], region: "South Asia", flags: .init(png: "https://mainfacts.com/media/images/coats_of_arms/th.png")))
+    CountryDetailView(country: Country.preview)
 }

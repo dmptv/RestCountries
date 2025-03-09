@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var viewModel: CountryViewModel = CountryViewModel(countryService: APIService.shared)
+    @State var viewModel: CountryViewModel = CountryViewModel(countryUseCase: CountryUseCase())
 
     var body: some View {
         CountryListView()
