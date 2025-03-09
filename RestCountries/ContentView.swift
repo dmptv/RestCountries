@@ -20,12 +20,12 @@ struct ContentView: View {
 
             HelloWorldView()
                 .tabItem {
-                    Label("Hello", systemImage: "hand.wave")
+                    Label("Favorites", systemImage: "heart.fill")
                 }
 
             CountriesMap()
                 .tabItem {
-                    Label("Map", systemImage: "hand.wave")
+                    Label("Map", systemImage: "globe.americas.fill")
                 }
         }
     }
