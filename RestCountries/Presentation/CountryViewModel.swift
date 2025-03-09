@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-
 @MainActor
 @Observable
-class CountryViewModel {
+final class CountryViewModel {
     private let countryUseCase: CountryUseCasesProtocol
     private var countries: [Country] = []
     private var filterTask: Task<Void, Never>?
@@ -51,33 +50,34 @@ class CountryViewModel {
     }
 
     func loadCountries() {
-        if !countries.isEmpty { return }
-
         isLoading = true
 
         Task {
             do {
                 let fetchedCountries = try await countryUseCase.loadCountries()
 
-                await MainActor.run {
-                    countries = fetchedCountries
-                    filteredCountries = fetchedCountries
-                    isLoading = false
-                }
+                if fetchedCountries != countries {
+                    await MainActor.run {
+                        countries = fetchedCountries
+                        filteredCountries = fetchedCountries
+                    }
 
-                Task.detached(priority: .background) { [weak self] in
-                    guard let self else { return }
-                    do {
-                        try await countryUseCase.saveCountries(fetchedCountries)
-                    } catch {
-                        print("Error saving countries: \(error)")
+                    Task.detached(priority: .background) { [weak self] in
+                        do {
+                            try await self?.countryUseCase.saveCountries(fetchedCountries)
+                        } catch {
+                            print("Error saving countries: \(error)")
+                        }
                     }
                 }
             } catch {
                 await MainActor.run {
                     errorMessage = error.localizedDescription
-                    isLoading = false
                 }
+            }
+
+            await MainActor.run {
+                isLoading = false
             }
         }
     }

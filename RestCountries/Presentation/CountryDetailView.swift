@@ -53,7 +53,7 @@ struct CountryDetailView: View {
     CountryDetailView_Preview()
 }
 
-struct CountryDetailView_Preview: View {
+private struct CountryDetailView_Preview: View {
     @State var country: Country? = nil
 
     var body: some View {
