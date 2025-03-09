@@ -82,6 +82,15 @@ final class CountryViewModel {
         }
     }
 
+    func toggleFavorite(country: Country) {
+        if let index = countries.firstIndex(where: { $0.id == country.id }) {
+            var processedCountry = countries[index]
+            processedCountry.isFavorite.toggle()
+            countries[index] = processedCountry
+            filteredCountries[index] = processedCountry
+        }
+    }
+
     private func applyFilters() async {
         filteredCountries = await countryUseCase
             .filterCountries(by: searchQuery,

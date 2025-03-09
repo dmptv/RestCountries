@@ -11,8 +11,23 @@ struct ContentView: View {
     @State var viewModel: CountryViewModel = CountryViewModel(countryUseCase: CountryUseCase())
 
     var body: some View {
-        CountryListView()
-            .environment(viewModel)
+        TabView {
+            CountryListView()
+                .environment(viewModel)
+                .tabItem {
+                    Label("Countries", systemImage: "globe")
+                }
+
+            HelloWorldView()
+                .tabItem {
+                    Label("Hello", systemImage: "hand.wave")
+                }
+
+            CountriesMap()
+                .tabItem {
+                    Label("Map", systemImage: "hand.wave")
+                }
+        }
     }
 }
 

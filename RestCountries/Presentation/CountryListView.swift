@@ -52,6 +52,13 @@ struct CountryListView: View {
                                 Text("Capital: \(String(describing: country.capital?.first))")
                                     .font(.subheadline)
                             }
+
+                            Spacer()
+                            Image(systemName: country.isFavorite ? "heart.fill" : "heart")
+                                .foregroundColor(.red)
+                                .onTapGesture {
+                                    viewModel.toggleFavorite(country: country)
+                                }
                         }
                     }
                 }

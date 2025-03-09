@@ -17,6 +17,7 @@ struct Country: Codable, Identifiable, Hashable {
     let capital: [String]?
     let region: String?
     let flags: Flags
+    var isFavorite: Bool = false
 
     struct Name: Codable, Hashable {
         let common: String
