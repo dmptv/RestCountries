@@ -48,10 +48,12 @@ actor ImageURLCache {
     func cleanup() async {
         await withTaskGroup(of: Void.self) { group in
             for url in cache.values {
-                do {
-                    try FileManager.default.removeItem(at: url)
-                } catch {
-                    print("Error removing file: \(error)")
+                group.addTask {
+                    do {
+                        try FileManager.default.removeItem(at: url)
+                    } catch {
+                        print("Error removing file: \(error)")
+                    }
                 }
             }
             await group.waitForAll()
