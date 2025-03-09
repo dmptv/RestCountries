@@ -8,9 +8,14 @@
 import Foundation
 
 extension Country {
-    static var preview: Self = .init(
-        name: .init(common: "Thailand"),
-        capital: ["Bangkok"],
-        region: "South Asia",
-        flags: .init(png: ImageURLCache.shared.getURLString(forImageName: "th")))
+    static func preview() async -> Self? {
+        if let imgUrl = await ImageURLCache.shared.getURLString(forImageName: "th") {
+            return .init(
+                name: .init(common: "Thailand"),
+                capital: ["Bangkok"],
+                region: "South Asia",
+                flags: .init(png: imgUrl))
+        }
+        return nil
+    }
 }

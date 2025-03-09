@@ -50,5 +50,23 @@ struct CountryDetailView: View {
 }
 
 #Preview {
-    CountryDetailView(country: Country.preview)
+    CountryDetailView_Previews()
 }
+
+struct CountryDetailView_Previews: View {
+    @State var country: Country? = nil
+
+    var body: some View {
+        VStack {
+            if let country = country {
+                CountryDetailView(country: country)
+            } else {
+                ProgressView()
+            }
+        }
+        .task {
+            country = await Country.preview()
+        }
+    }
+}
+
