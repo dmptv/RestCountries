@@ -11,15 +11,21 @@ import SwiftUI
 @Observable
 final class CountryViewModel {
     private let countryUseCase: CountryUseCasesProtocol
-    private var _countries: [Country] = []
     private var filterTask: Task<Void, Never>?
+
+    private var _countries: [Country] = [] {
+        didSet {
+            filteredCountries = _countries
+        }
+    }
+    private(set) var filteredCountries: [Country] = []
+
 
     var regions: [String] {
         let uniqueRegions = Set(_countries.compactMap { $0.region })
         return ["All"] + uniqueRegions.sorted()
     }
 
-    var filteredCountries: [Country] = []
     var isLoading = false
     var errorMessage: String?
 
@@ -47,6 +53,12 @@ final class CountryViewModel {
         self.countryUseCase = countryUseCase
     }
 
+    func setCountries(_ countries: [Country]) {
+        if countries != _countries {
+            _countries = countries
+        }
+    }
+
     func loadCountries() {
         isLoading = true
 
@@ -56,7 +68,6 @@ final class CountryViewModel {
 
                 if countries != _countries {
                     _countries = countries
-                    filteredCountries = countries
                 }
             } catch {
                 errorMessage = error.localizedDescription

@@ -12,16 +12,11 @@ protocol CountryServiceProtocol: Sendable {
 }
 
 final class APIService: CountryServiceProtocol {
-    static var shared = APIService()
-    var decoder: JSONDecoding = JSONDecoder()
+    static let shared = APIService()
+    private let decoder: JSONDecoding
 
     private init(decoder: JSONDecoding = JSONDecoder()) {
         self.decoder = decoder
-    }
-
-    // Static function to create a shared instance with a custom decoder
-    static func configure(with decoder: JSONDecoding) {
-        shared = APIService(decoder: decoder)
     }
 
     func fetchCountries() async throws -> [Country] {
@@ -31,7 +26,8 @@ final class APIService: CountryServiceProtocol {
 
         let (data, response) = try await URLSession.shared.data(from: url)
 
-        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+        guard let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode) else {
             throw APIError.networkError(
                 NSError(domain: "HTTP Error",
                         code: (response as? HTTPURLResponse)?.statusCode ?? 500,

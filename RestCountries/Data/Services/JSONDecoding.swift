@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol JSONDecoding {
+protocol JSONDecoding: Sendable {
     func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T
 }
 
