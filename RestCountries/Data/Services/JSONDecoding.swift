@@ -12,3 +12,4 @@ protocol JSONDecoding {
 }
 
 extension JSONDecoder: JSONDecoding {}
+

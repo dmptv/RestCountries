@@ -24,7 +24,7 @@ struct CountryListView: View {
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 8)
 
                 if viewModel.isLoading {
                     ProgressView() 
@@ -51,27 +51,27 @@ struct CountryListView: View {
                                     .font(.headline)
                                 Text("Capital: \(String(describing: country.capital?.first))")
                                     .font(.subheadline)
+                                Spacer()
+                                Image(systemName: country.isFavorite ? "star.fill" : "star")
+                                    .foregroundColor(.red)
+                                    .onTapGesture {
+                                        viewModel.toggleFavorite(country: country)
+                                    }
                             }
-
-                            Spacer()
-                            Image(systemName: country.isFavorite ? "heart.fill" : "heart")
-                                .foregroundColor(.red)
-                                .onTapGesture {
-                                    viewModel.toggleFavorite(country: country)
-                                }
                         }
                     }
+                    .padding(.vertical, 4)
                 }
+                .searchable(text: Binding(
+                    get: { viewModel.searchQuery },
+                    set: { newValue in viewModel.searchQuery = newValue }
+                ), prompt: Text("Search for a country"))
                 .navigationDestination(for: Country.self) { country in
                     CountryDetailView(country: country)
                 }
                 .navigationDestination(for: String.self) { _ in
                     Text("Ana")
                 }
-                .searchable(text: Binding(
-                    get: { viewModel.searchQuery },
-                    set: { newValue in viewModel.searchQuery = newValue }
-                ), prompt: Text("Search for a country"))
             }
             .navigationTitle("Countries")
             .task {

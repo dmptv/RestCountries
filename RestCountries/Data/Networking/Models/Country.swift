@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Country: Codable, Identifiable, Hashable {
+struct Country: Codable, Identifiable, Hashable, Sendable {
     static func == (lhs: Country, rhs: Country) -> Bool {
         lhs.id == rhs.id
     }

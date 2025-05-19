@@ -7,11 +7,11 @@
 
 import Foundation
 
-protocol CountryServiceProtocol {
+protocol CountryServiceProtocol: Sendable {
     func fetchCountries() async throws -> [Country]
 }
 
-class APIService: CountryServiceProtocol {
+final class APIService: CountryServiceProtocol {
     static var shared = APIService()
     var decoder: JSONDecoding = JSONDecoder()
 

@@ -11,11 +11,11 @@ import SwiftUI
 @Observable
 final class CountryViewModel {
     private let countryUseCase: CountryUseCasesProtocol
-    private var countries: [Country] = []
+    private var _countries: [Country] = []
     private var filterTask: Task<Void, Never>?
 
     var regions: [String] {
-        let uniqueRegions = Set(countries.compactMap { $0.region })
+        let uniqueRegions = Set(_countries.compactMap { $0.region })
         return ["All"] + uniqueRegions.sorted()
     }
 
@@ -34,11 +34,9 @@ final class CountryViewModel {
 
     var selectedRegion: String? = nil {
         didSet {
-            Task {
-                filterTask?.cancel()
-                filterTask = Task {
-                    await applyFilters()
-                }
+            filterTask?.cancel()
+            filterTask = Task {
+                await applyFilters()
             }
         }
     }
@@ -54,39 +52,24 @@ final class CountryViewModel {
 
         Task {
             do {
-                let fetchedCountries = try await countryUseCase.loadCountries()
+                let countries: [Country] = try await countryUseCase.loadCountries()
 
-                if fetchedCountries != countries {
-                    await MainActor.run {
-                        countries = fetchedCountries
-                        filteredCountries = fetchedCountries
-                    }
-
-                    Task.detached(priority: .background) { [weak self] in
-                        do {
-                            try await self?.countryUseCase.saveCountries(fetchedCountries)
-                        } catch {
-                            print("Error saving countries: \(error)")
-                        }
-                    }
+                if countries != _countries {
+                    _countries = countries
+                    filteredCountries = countries
                 }
             } catch {
-                await MainActor.run {
-                    errorMessage = error.localizedDescription
-                }
+                errorMessage = error.localizedDescription
             }
-
-            await MainActor.run {
-                isLoading = false
-            }
+            isLoading = false
         }
     }
 
     func toggleFavorite(country: Country) {
-        if let index = countries.firstIndex(where: { $0.id == country.id }) {
-            var processedCountry = countries[index]
+        if let index = _countries.firstIndex(where: { $0.id == country.id }) {
+            var processedCountry = _countries[index]
             processedCountry.isFavorite.toggle()
-            countries[index] = processedCountry
+            _countries[index] = processedCountry
             filteredCountries[index] = processedCountry
         }
     }
@@ -95,7 +78,6 @@ final class CountryViewModel {
         filteredCountries = await countryUseCase
             .filterCountries(by: searchQuery,
                              selectedRegion: selectedRegion,
-                             from: countries)
+                             from: _countries)
     }
 }
-
