@@ -7,11 +7,25 @@
 
 import SwiftUI
 
+
+@MainActor
+protocol CountryViewModelProtocol: AnyObject {
+    var filteredCountries: [Country] { get }
+    var regions: [String] { get }
+    var isLoading: Bool { get }
+    var errorMessage: String? { get }
+    var searchQuery: String { get set }
+    var selectedRegion: String? { get set }
+
+    func loadCountries()
+    func toggleFavorite(country: Country)
+}
+
 @MainActor
 @Observable
 final class CountryViewModel {
     private let countryUseCase: CountryUseCasesProtocol
-    private var filterTask: Task<Void, Never>?
+    private var debounceTask: Task<Void, Never>?
 
     private var _countries: [Country] = [] {
         didSet {
@@ -31,20 +45,12 @@ final class CountryViewModel {
 
     var searchQuery: String = "" {
         didSet {
-            filterTask?.cancel()
-            filterTask = Task {
-                await applyFilters()
-            }
+            debounceSearch()
         }
     }
 
-    var selectedRegion: String? = nil {
-        didSet {
-            filterTask?.cancel()
-            filterTask = Task {
-                await applyFilters()
-            }
-        }
+    var selectedRegion: String? {
+        didSet { debounceSearch() }
     }
 
     init(
@@ -53,26 +59,36 @@ final class CountryViewModel {
         self.countryUseCase = countryUseCase
     }
 
-    func setCountries(_ countries: [Country]) {
-        if countries != _countries {
-            _countries = countries
+    private func debounceSearch() {
+        debounceTask?.cancel()
+
+        debounceTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            await self?.applyFilters()
         }
     }
 
+    private func applyFilters() async {
+        filteredCountries = await countryUseCase
+            .filterCountries(by: searchQuery,
+                             selectedRegion: selectedRegion,
+                             from: _countries)
+    }
+}
+
+extension CountryViewModel: CountryViewModelProtocol {
+
     func loadCountries() {
+        defer {  isLoading = false }
         isLoading = true
 
         Task {
             do {
-                let countries: [Country] = try await countryUseCase.loadCountries()
-
-                if countries != _countries {
-                    _countries = countries
-                }
+                let countries = try await countryUseCase.loadCountries()
+                _countries = countries
             } catch {
                 errorMessage = error.localizedDescription
             }
-            isLoading = false
         }
     }
 
@@ -83,12 +99,5 @@ final class CountryViewModel {
             _countries[index] = processedCountry
             filteredCountries[index] = processedCountry
         }
-    }
-
-    private func applyFilters() async {
-        filteredCountries = await countryUseCase
-            .filterCountries(by: searchQuery,
-                             selectedRegion: selectedRegion,
-                             from: _countries)
     }
 }
