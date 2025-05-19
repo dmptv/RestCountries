@@ -13,11 +13,10 @@ protocol CountryViewModelProtocol: AnyObject {
     var filteredCountries: [Country] { get }
     var regions: [String] { get }
     var isLoading: Bool { get }
-    var errorMessage: String? { get }
     var searchQuery: String { get set }
     var selectedRegion: String? { get set }
 
-    func loadCountries()
+    func loadCountries() async -> Result<[Country], Error>
     func toggleFavorite(country: Country)
 }
 
@@ -41,7 +40,6 @@ final class CountryViewModel {
     }
 
     var isLoading = false
-    var errorMessage: String?
 
     var searchQuery: String = "" {
         didSet {
@@ -78,26 +76,24 @@ final class CountryViewModel {
 
 extension CountryViewModel: CountryViewModelProtocol {
 
-    func loadCountries() {
-        defer {  isLoading = false }
+    func loadCountries() async -> Result<[Country], Error> {
         isLoading = true
+        defer { isLoading = false }
 
-        Task {
-            do {
-                let countries = try await countryUseCase.loadCountries()
-                _countries = countries
-            } catch {
-                errorMessage = error.localizedDescription
-            }
+        do {
+            let countries = try await countryUseCase.loadCountries()
+            _countries = countries
+            return .success(countries)
+        } catch {
+            return .failure(error)
         }
     }
 
     func toggleFavorite(country: Country) {
-        if let index = _countries.firstIndex(where: { $0.id == country.id }) {
-            var processedCountry = _countries[index]
-            processedCountry.isFavorite.toggle()
-            _countries[index] = processedCountry
-            filteredCountries[index] = processedCountry
-        }
+        guard let index = _countries.firstIndex(where: { $0.id == country.id }) else { return }
+        var updated = _countries[index]
+        updated.isFavorite.toggle()
+        _countries[index] = updated
+        filteredCountries[index] = updated
     }
 }

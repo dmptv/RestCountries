@@ -10,7 +10,8 @@ import Kingfisher
 
 struct CountryListView: View {
     @Environment(CountryViewModel.self) var viewModel: CountryViewModel
-    @State private var dataLoaded = false
+    @State var errorMessage: String?
+
 
     var body: some View {
         NavigationStack() {
@@ -30,7 +31,7 @@ struct CountryListView: View {
                     ProgressView() 
                 }
 
-                if let error = viewModel.errorMessage {
+                if let error = errorMessage {
                     Text("Error: \(error)")
                 }
 
@@ -75,12 +76,11 @@ struct CountryListView: View {
             }
             .navigationTitle("Countries")
             .task {
-                if !dataLoaded {
-                    viewModel.loadCountries()
-                    dataLoaded = true
+                let result = await viewModel.loadCountries()
+                if case .failure(let error) = result {
+                    errorMessage = error.localizedDescription
                 }
             }
-
         }
     }
 }
