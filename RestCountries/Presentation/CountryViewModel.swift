@@ -94,6 +94,5 @@ extension CountryViewModel: CountryViewModelProtocol {
         var updated = _countries[index]
         updated.isFavorite.toggle()
         _countries[index] = updated
-        filteredCountries[index] = updated
     }
 }

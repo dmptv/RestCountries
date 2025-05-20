@@ -41,8 +41,9 @@ final class CountryUseCase: CountryUseCasesProtocol {
         }
 
         return countries.filter { country in
-            let matchesSearch = searchText.isEmpty || country.name.common.lowercased().contains(searchText.lowercased())
-            let matchesRegion = selectedRegion == nil || country.region == selectedRegion
+            let matchesSearch: Bool = searchText.isEmpty || country.name.common.lowercased().contains(searchText.lowercased())
+            let matchesRegion: Bool = (selectedRegion == nil) || country.region == selectedRegion
+
             return matchesSearch && matchesRegion
         }
     }

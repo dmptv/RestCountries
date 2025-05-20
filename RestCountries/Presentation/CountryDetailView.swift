@@ -6,22 +6,25 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CountryDetailView: View {
     let country: Country
 
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
-            AsyncImage(url: URL(string: country.flags.png)) { image in
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, maxHeight: 200)
-                    .clipped()
-            } placeholder: {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: 200)
-            }
+            KFImage(URL(string: country.flags.png))
+                .loadDiskFileSynchronously()
+                .cacheMemoryOnly()
+                .renderingMode(.original)
+                .placeholder {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: 200)
+                }
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity, maxHeight: 200)
+                .clipped()
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(country.name.common)
@@ -42,10 +45,10 @@ struct CountryDetailView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .navigationTitle(country.capital?.first ?? "")
-        .background(content: {
+        .background(
             Color.green.opacity(0.4)
                 .ignoresSafeArea()
-        })
+        )
     }
 }
 
